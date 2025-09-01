@@ -33,15 +33,16 @@ A plugin for Sweet Home 3D that adds tagging functionality to levels, allowing u
 - Go to **Tools** → **Level Tags Manager** in the main menu
 
 ### Managing Tags
-- **Add Tags**: Select a level and click "Add Tags" to assign new tags
-- **Remove Tags**: Right-click on any tag to remove it from a level (feature planned)
-- **View by Tags**: See all levels organized by their assigned tags
-- **Bulk Operations**: Select a tag to hide/show all levels with that tag
+- **Add Tags**: Select levels and use the "Add tag" field or "Add Tags..." button
+- **Remove Tags**: Select levels and use the "Remove tag" dropdown or "Remove All Tags" button  
+- **View by Tags**: Use the Tags table showing tag names, counts, and associated levels
+- **Bulk Operations**: Select tags and use "Show All"/"Hide All" buttons with Union/Intersection modes
 
 ### Tag Operations
-- **Hide Levels with Tag**: Hide all levels that have a specific tag
-- **Show Levels with Tag**: Make all levels with a specific tag viewable
-- **Find Levels with Tag**: Quickly locate all levels sharing a tag
+- **Union Mode**: Show/hide levels with ANY of the selected tags
+- **Intersection Mode**: Show/hide levels with ALL selected tags
+- **Visibility Control**: Click checkboxes in the Visible column to toggle individual levels
+- **Filter Levels**: Use filter fields to search levels by name or tag content
 
 ## Practical Use Cases
 
@@ -103,39 +104,39 @@ This ensures compatibility with the native file format and persistence across sa
 
 ### Prerequisites
 - Java 8 or higher
-- Sweet Home 3D 7.5+ source code (for compilation)
-- Maven 3.6+ (optional, for build automation)
+- Sweet Home 3D 7.5+ JAR file (for compilation)
+- Apache Ant (for build automation)
 
 ### Building
 ```bash
- # Copy the Sweet Home 3D JAR file to the lib directory
+# Copy the Sweet Home 3D JAR file to the lib directory
 cp /path/to/SweetHome3D-7.5.jar lib/
 
-# Compile the plugin
-javac -cp "lib/SweetHome3D-7.5.jar" src/com/shlomoswidler/sh3d/leveltagsplugin/*.java
+# Build the plugin using Ant
+ant build
 
-# Create the plugin JAR
-jar cf LevelTagsPlugin.jar -C src .
-
+# This creates both LevelTagsPlugin.jar and LevelTagsPlugin.sh3p
 ```
 
 ### Project Structure
 ```
-level-tags-plugin/
+sh3d-level-tags-plugin/
 ├── src/com/shlomoswidler/sh3d/leveltagsplugin/
 │   ├── LevelTagsPlugin.java          # Main plugin class
 │   ├── LevelTagsManager.java         # Core tag management logic
-│   ├── LevelTagsDialog.java          # Main UI dialog
-│   ├── TagOperations.java            # Bulk operations controller
-│   └── TagData.java                  # Tag data model
+│   ├── LevelTagsDialog.java          # Main UI dialog with split-pane layout
+│   ├── AddTagsDialog.java            # Add tags dialog
+│   └── RemoveTagsDialog.java         # Remove tags dialog
 ├── src/
+│   ├── ApplicationPlugin.properties  # Plugin metadata
 │   └── LevelTagsPlugin.properties    # Localized strings
 ├── docs/
 │   ├── USER_GUIDE.md                 # Detailed user guide
 │   ├── API_REFERENCE.md              # Developer API reference
 │   └── CHANGELOG.md                  # Version history
-├── lib/                              # Dependencies (if any)
-└── ApplicationPlugin.properties      # Plugin metadata
+├── lib/                              # External dependencies (place SweetHome3D-7.5.jar here before building)
+├── build.xml                         # Ant build configuration
+└── build/                            # Build output directory
 ```
 
 ## License

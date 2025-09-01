@@ -12,46 +12,56 @@ The Level Tags Plugin extends Sweet Home 3D with a powerful tagging system for l
 
 ### Interface Overview
 
-The Level Tags Manager dialog has two main tabs:
+The Level Tags Manager dialog uses a split-pane layout with two main panels:
 
-- **Levels Tab**: Shows all levels with their assigned tags
-- **Tags Tab**: Shows all tags with the levels that use them
+- **Left Panel (Levels)**: Shows all levels with their assigned tags, filtering controls, and level management buttons
+- **Right Panel (Tags)**: Shows two sections:
+  - **Tags Table**: Displays all tags with count (#) and associated level names
+  - **Associated Levels**: Shows levels related to selected tags with Union/Intersection mode options
 
 ## Managing Tags
 
 ### Adding Tags to a Level
 
-1. Select a level in the Levels tab
-2. Click the **Add Tags...** button
-3. In the dialog that appears:
-   - Current tags for the level are shown at the top
-   - Enter new tags in the text field (separate multiple tags with commas)
-   - Select from existing tags by clicking on them
-4. Click **Add** to apply the new tags
-
-**Example**: To add tags "residential", "ground floor", and "public" to a level, enter:
-```
-residential, ground floor, public
-```
+1. Select one or more levels in the left panel table
+2. Type a tag name in the "Add tag" field at the bottom
+3. Click **Add to Selected** button
 
 ### Removing Tags from a Level
 
-1. Select a level in the Levels tab
-2. The level's current tags will be highlighted
-3. Select the tags you want to remove
-4. Click **Remove Tags**
+**Method 1: Quick Remove (Left Panel)**
+1. Select one or more levels in the left panel table
+2. Select a tag from the "Remove tag" dropdown
+3. Click **Remove from Selected** button
+
+**Method 2: Remove All Tags**
+1. Select one or more levels in the left panel table  
+2. Click **Remove All Tags** button to remove all tags from selected levels
 
 ### Viewing Tags
 
-#### Levels Tab
-- Shows all levels in your home
-- Each level displays its assigned tags as colored labels
-- Empty levels (no tags) are clearly indicated
+#### Left Panel (Levels Table)
+- Shows all levels in your home with three columns:
+  - **Visible**: Checkbox showing/controlling level visibility
+  - **Level**: Level name  
+  - **Tags**: Comma-separated list of assigned tags
+- Filter field allows searching by level name or tag
+- Visibility filter dropdown: "All", "Visible only", "Hidden only"
+- Selection buttons: "Select All" and "Select None"
 
-#### Tags Tab  
-- Shows all tags currently in use
-- Each tag shows how many levels use it
-- Click on a tag to see which levels have that tag
+#### Right Panel (Tags Table)
+- Shows all tags currently in use with three columns:
+  - **Tag**: Tag name
+  - **#**: Number of levels with this tag  
+  - **Levels**: Comma-separated list of level names using this tag
+- Filter field allows searching by tag name
+- Tag management buttons: "Rename", "Delete"
+
+#### Associated Levels Section
+- Shows levels associated with selected tags from the Tags table
+- **Union mode**: Shows levels with ANY of the selected tags
+- **Intersection mode**: Shows levels with ALL selected tags
+- "Show All" and "Hide All" buttons for bulk visibility operations
 
 ## Bulk Operations
 
@@ -59,24 +69,21 @@ residential, ground floor, public
 
 The plugin provides powerful bulk operations to control level visibility:
 
-#### From the Tags Tab:
-1. Select a tag from the list
-2. Click **Hide All with Tag** to hide all levels with that tag
-3. Click **Show All with Tag** to make all levels with that tag visible
+#### From the Associated Levels Section:
+1. Select one or more tags from the Tags table (right panel)
+2. Choose Union or Intersection mode:
+   - **Union**: Affects levels with ANY of the selected tags
+   - **Intersection**: Affects levels with ALL selected tags
+3. Click **Show All** or **Hide All** to control visibility
 
-#### From the Context Menu:
-1. Right-click on any tag (in either tab)
-2. Choose from the context menu:
-   - **Hide All Levels with This Tag**
-   - **Show All Levels with This Tag**
+#### Individual Level Operations
 
-### Individual Level Operations
+**From the Levels Table:**
+- Click the **Visible** checkbox to toggle individual level visibility
+- Select levels and use visibility filter to show/hide groups
 
-You can also control individual levels:
-
-1. Select a level in the Levels tab
-2. Click **Hide Level** or **Show Level**
-3. Or right-click the level for context menu options
+**From the Associated Levels Table:**
+- Click the **Visible** checkbox for any level shown in the associated levels section
 
 ## Practical Use Cases
 
@@ -119,10 +126,12 @@ Tag levels by construction or design phase:
 - Combine functional and spatial tags: `residential-tower-a`
 
 ### Workflow Integration
-- Tag levels as you create them
-- Use bulk operations to focus on specific areas during design
-- Hide irrelevant levels to reduce visual complexity
-- Show only relevant levels when presenting to clients
+- **Quick tagging**: Use the left panel's quick add feature to tag levels immediately
+- **Bulk visibility**: Use Union/Intersection modes to show/hide groups of related levels  
+- **Project focus**: Filter by tags to work on specific building sections
+- **Client presentations**: Hide construction/technical levels, show only finished spaces
+- **Design phases**: Use tags to manage different project phases and toggle visibility
+- **Real-time feedback**: Watch the status bar for confirmation of all operations
 
 ## Data Storage
 
@@ -163,5 +172,18 @@ Tags are stored as custom properties on each Level object and are automatically 
 - Use Ctrl+A (Cmd+A) to select all levels
 
 ### Search and Filter
-- Type in the tag field to filter existing tags
-- Use the search functionality to quickly find levels with specific tags
+
+**Left Panel (Levels)**
+- **Filter field**: Type to search levels by name or tag content
+- **Show dropdown**: Filter by visibility status (All/Visible only/Hidden only)
+
+**Right Panel (Tags)**  
+- **Filter field**: Type to search tags by name
+- **Tags table**: Automatically shows count and associated levels for each tag
+
+### Status Bar
+
+The status bar at the bottom shows:
+- **Left side**: Operation feedback messages (e.g., "Added tag 'bedroom' to 3 level(s)")
+- **Right side**: Plugin version number
+- Messages automatically clear after 5 seconds

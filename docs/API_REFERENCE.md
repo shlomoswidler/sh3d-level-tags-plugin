@@ -54,7 +54,7 @@ public class LevelTagsManager {
 
 ### LevelTagsDialog
 
-Main UI dialog that provides the tag management interface.
+Main UI dialog with split-pane layout providing comprehensive tag management interface.
 
 ```java
 public class LevelTagsDialog extends JDialog {
@@ -63,35 +63,65 @@ public class LevelTagsDialog extends JDialog {
     
     // UI Setup
     private void createComponents()
+    private void createLeftPanel()     // Levels view
+    private void createRightPanel()    // Tags view with split sections
     private void layoutComponents()
     private void setupEventHandlers()
     
+    // Table Models
+    private LevelsTableModel levelsTableModel;
+    private TagsTableModel tagsTableModel; 
+    private AssociatedLevelsTableModel associatedLevelsTableModel;
+    
     // Event Handlers
-    private void onLevelSelected(Level level)
-    private void onTagSelected(String tag)
-    private void onAddTagsClicked()
-    private void onRemoveTagsClicked()
+    private void setupLeftPanelHandlers()
+    private void setupRightPanelHandlers()
+    private void syncTagsSelection()
+    private void syncLevelsSelection()
+    
+    // Data Operations
+    private void addTagToSelectedLevels()
+    private void removeTagFromSelectedLevels() 
+    private void setVisibilityForTaggedLevels(boolean visible)
     
     // UI Updates
-    private void refreshLevelsList()
-    private void refreshTagsList() 
-    private void updateButtonStates()
+    private void refreshData()
+    private void refreshLevelsTable()
+    private void refreshTagsList()
+    private void refreshAssociatedLevelsTable()
+    private void showStatus(String message)
 }
 ```
 
-### TagData
+### TagInfo
 
-Data model class representing tag information.
+Simple data model class representing tag information for UI display.
 
 ```java
-public class TagData implements Serializable {
-    private List<String> tags;
-    private long timestamp;
+public static class TagInfo {
+    public final String name;
+    public final int levelCount;
     
-    public TagData(List<String> tags)
-    public List<String> getTags()
-    public void setTags(List<String> tags)
-    public long getTimestamp()
+    public TagInfo(String name, int levelCount)
+    
+    @Override
+    public String toString()  // Returns "name · (levelCount levels)"
+}
+```
+
+### VisibilityFilter
+
+Enum for filtering levels by visibility status.
+
+```java
+private enum VisibilityFilter {
+    ALL("All"),
+    VISIBLE("Visible only"), 
+    HIDDEN("Hidden only");
+    
+    VisibilityFilter(String displayName)
+    @Override
+    public String toString()
 }
 ```
 
@@ -160,44 +190,139 @@ public interface LevelTagsListener {
 
 #### LevelsTableModel
 ```java
-public class LevelsTableModel extends AbstractTableModel {
-    private List<Level> levels;
-    private LevelTagsManager tagsManager;
+private class LevelsTableModel extends AbstractTableModel {
+    private final String[] columnNames = {"Visible", "Level", "Tags"};
+    private List<Level> filteredLevels = new ArrayList<>();
     
-    public int getColumnCount()  // Returns 2 (Level, Tags)
-    public int getRowCount()     // Returns levels.size()
-    public Object getValueAt(int row, int col)
-    public String getColumnName(int col)
+    public int getColumnCount()  // Returns 3 (Visible, Level, Tags)
+    public int getRowCount()     // Returns filteredLevels.size()
+    public Object getValueAt(int row, int col)  // Col 0: Boolean, Col 1: String, Col 2: String
+    public Class<?> getColumnClass(int column)  // Boolean for visibility, String for others
+    public Level getFilteredLevelAt(int row)
+    private void updateFilteredLevels()  // Applies level and visibility filters
 }
 ```
 
 #### TagsTableModel
 ```java  
-public class TagsTableModel extends AbstractTableModel {
-    private Map<String, List<Level>> tagToLevelsMap;
+private class TagsTableModel extends AbstractTableModel {
+    private final String[] columnNames = {"Tag", "#", "Levels"};
+    private List<TagInfo> filteredTags = new ArrayList<>();
     
-    public int getColumnCount()  // Returns 2 (Tag, Level Count)
-    public int getRowCount()     // Returns tagToLevelsMap.size()
-    public Object getValueAt(int row, int col) 
-    public String getColumnName(int col)
+    public int getColumnCount()  // Returns 3 (Tag, Count, Levels)
+    public int getRowCount()     // Returns filteredTags.size()
+    public Object getValueAt(int row, int col)  // Col 0: String, Col 1: Integer, Col 2: String
+    public Class<?> getColumnClass(int column)  // String, Integer, String
+    public TagInfo getTagInfoAt(int row)
+    private void updateFilteredTags()  // Applies tag name filter
+}
+```
+
+#### AssociatedLevelsTableModel
+```java
+private class AssociatedLevelsTableModel extends AbstractTableModel {
+    private final String[] columnNames = {"Visible", "Level"};  
+    private List<Level> associatedLevels = new ArrayList<>();
+    
+    public int getColumnCount()  // Returns 2 (Visible, Level)
+    public int getRowCount()     // Returns associatedLevels.size()
+    public Object getValueAt(int row, int col)  // Col 0: Boolean, Col 1: String
+    public Class<?> getColumnClass(int column)  // Boolean, String
+    private void updateAssociatedLevels()  // Updates based on selected tags and mode
 }
 ```
 
 ### Custom Renderers
 
-#### TagListCellRenderer
+#### VisibilityCheckboxRenderer
 ```java
-public class TagListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(
-        JList list, Object value, int index, 
-        boolean isSelected, boolean cellHasFocus)
+private static class VisibilityCheckboxRenderer extends JCheckBox implements TableCellRenderer {
+    public VisibilityCheckboxRenderer()
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column)
 }
 ```
 
-Renders tags with:
-- Color coding based on tag type
-- Level count badges  
-- Visual indicators for visibility state
+Renders visibility column as:
+- Centered checkboxes for boolean visibility state
+- Proper selection highlighting
+- Consistent checkbox behavior across tables
+
+#### TagsRenderer  
+```java
+private static class TagsRenderer extends JPanel implements TableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column)
+}
+```
+
+Renders tags column with:
+- Button-style tag display for comma-separated tag strings
+- Proper text wrapping and spacing
+- Selection highlighting support
+
+## UI Layout and Features
+
+### Split Pane Architecture
+
+```java
+// Main horizontal split pane
+private JSplitPane splitPane;
+splitPane.setDividerLocation(750);  // 750px left panel width
+splitPane.setResizeWeight(0.65);    // 65/35 split ratio
+
+// Right panel vertical split pane  
+private JSplitPane rightSplitPane;
+rightSplitPane.setDividerLocation(250);  // Tags table height
+rightSplitPane.setResizeWeight(0.4);     // 40% for tags table
+```
+
+### Panel Minimum Sizes
+```java
+leftPanel.setMinimumSize(new Dimension(550, 0));   // Ensures buttons visible
+rightPanel.setMinimumSize(new Dimension(300, 0));  // Maintains functionality
+```
+
+### Union/Intersection Mode
+```java
+private JRadioButton unionModeRadio;        // Show levels with ANY selected tags
+private JRadioButton intersectionModeRadio; // Show levels with ALL selected tags
+
+// Mode selection affects Associated Levels table content
+private void refreshAssociatedLevelsTable() {
+    if (unionModeRadio.isSelected()) {
+        // Union: levels with any selected tags
+    } else {
+        // Intersection: levels with all selected tags  
+    }
+}
+```
+
+### Status Bar with Version
+```java
+private JPanel statusPanel;      // BorderLayout container
+private JLabel statusLabel;      // Left side: operation messages
+private JLabel versionLabel;     // Right side: "v1.0.5"
+
+private void showStatus(String message) {
+    statusLabel.setText(message);
+    // Auto-clear after 5 seconds with Timer
+}
+```
+
+### Filter System
+```java
+private String levelFilterText = "";  // Left panel filter
+private String tagFilterText = "";    // Right panel filter
+private VisibilityFilter visibilityFilter = VisibilityFilter.ALL;
+
+// Filters applied in table model updateFiltered*() methods
+private void updateLevelFilter()  // Searches level names and tag content
+private void updateTagFilter()    // Searches tag names
+```
 
 ## Extension Points
 
@@ -378,16 +503,15 @@ The plugin is designed to handle:
 
 ### Build Process
 
-1. Compile against Sweet Home 3D JAR
+1. Compile against Sweet Home 3D JAR, placed in the lib/ directory. Use `ant` to build.
 2. Package resources and classes
 3. Generate plugin JAR with correct manifest
 4. Sign JAR for distribution (optional)
 
 ### Dependencies
 
-- Sweet Home 3D 7.5+ (provided)
+- Sweet Home 3D 7.5+ (required)
 - Java 8+ runtime
-- No external dependencies
 
 ### Deployment
 

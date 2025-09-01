@@ -9,9 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 - Context menu integration (pending Sweet Home 3D API changes)
-- Keyboard shortcuts for common operations
+- Keyboard shortcuts for common operations (pending Sweet Home 3D support)
+- Localization to additional languages
 
-## [1.0.0] - TBD
+## [1.0.5] - 2025-09-01
+
+### Changed
+- **BREAKING UI**: Converted Tags list to full table format for better information display
+- Redesigned single-window interface with horizontal split pane layout
+- Status bar with message on left and version on right
+- Enhanced Tags table with dedicated columns:
+  - Tag name column
+  - Count column (#) showing number of levels with each tag
+  - Levels column showing comma-separated list of level names
+- Checkbox-based visibility indicators in all tables
+- Updated docs to describe how to use new UI
+
+### Build/Code Changes
+- Use Resource Bundle (properties file) instead of hardcoded display stringa
+- Cleaned up strings in properties file
+- Updated docs to describe how to build
+
+## [1.0.0] - 2025-08-31
 
 ### Added
 - Core level tagging functionality
@@ -40,15 +59,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Main Level Tags Manager dialog
 - Add Tags dialog with existing tag suggestions
 - Levels table with tag display
-- Tags table with level count display  
-- Context menus for tag operations
+- Tags table with level count display
 - Confirmation dialogs for bulk operations
 - Status messages and user feedback
 
 ### Infrastructure
-- Maven-compatible project structure
+- Ant-compatible project structure
 - Automated build system
-- Unit and integration tests
 - Code documentation
 - User guide and tutorials
 - API reference documentation
@@ -81,9 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Tag validation and error handling
 
 #### Phase 5: Polish and Testing
-- [ ] Comprehensive testing suite
-- [ ] Performance optimization
-- [ ] Documentation completion
+- [x] Documentation completion
 - [ ] Localization support
 - [ ] Final bug fixes and stability
 

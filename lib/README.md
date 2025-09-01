@@ -13,22 +13,7 @@ To build the plugin, you need to place the following files in this directory:
 
 ### Building Sweet Home 3D JAR
 
-If you don't have the Sweet Home 3D JAR file, you can build it from source:
-
-1. Navigate to the Sweet Home 3D source directory:
-   ```bash
-   cd ../SweetHome3D-7.5-src
-   ```
-
-2. Build the JAR file:
-   ```bash
-   ant jarExecutable
-   ```
-
-3. Copy the JAR to this directory:
-   ```bash
-   cp install/SweetHome3D-7.5.jar ../level-tags-plugin/lib/
-   ```
+If you don't have the Sweet Home 3D JAR file, you can build it from source. See the Sweet Home 3D source repository for details.
 
 ### Alternative: Manual Installation
 
@@ -40,33 +25,29 @@ If you have Sweet Home 3D installed, you can find the JAR file in:
 
 Copy this file to the `lib/` directory and rename it to match the expected version.
 
-## Maven Local Repository
+## Ant Build System
 
-The Maven build is configured to look for dependencies in this directory as a local repository. The `pom.xml` includes:
+The Ant build system is configured to use JAR files from this directory. The `build.xml` includes:
 
 ```xml
-<repositories>
-    <repository>
-        <id>local-repo</id>
-        <url>file://${project.basedir}/lib</url>
-    </repository>
-</repositories>
+<path id="compile.classpath">
+    <fileset dir="${lib.dir}">
+        <include name="*.jar"/>
+    </fileset>
+</path>
 ```
 
-## Installing Dependencies Manually
+## Building the Plugin
 
-If you prefer to install the Sweet Home 3D dependency to your local Maven repository:
+To build the plugin with the dependencies in this directory:
 
 ```bash
-mvn install:install-file \
-    -Dfile=lib/SweetHome3D-7.5.jar \
-    -DgroupId=com.eteks \
-    -DartifactId=sweethome3d \
-    -Dversion=7.5 \
-    -Dpackaging=jar
+# Make sure SweetHome3D-7.5.jar is in the lib/ directory
+# Then build using Ant
+ant build
 ```
 
-Then you can remove the local repository configuration from `pom.xml`.
+The Ant build system will automatically find and include all JAR files in the `lib/` directory.
 
 ## File Structure
 
@@ -86,11 +67,11 @@ If you get compilation errors about missing Sweet Home 3D classes:
 2. Check that the JAR file is not corrupted
 3. Ensure you're using a compatible version (7.5 or later)
 
-### Maven Build Issues
-If Maven can't find the dependencies:
-1. Check the file path in the local repository configuration
-2. Verify the JAR file name matches the Maven artifact version
-3. Try clearing the Maven cache: `mvn clean`
+### Ant Build Issues
+If Ant can't find the dependencies:
+1. Verify the JAR file is in the `lib/` directory
+2. Check that the JAR file name matches the expected version
+3. Try cleaning and rebuilding: `ant clean build`
 
 ### Version Compatibility
 The plugin requires Sweet Home 3D version 7.5 or later. Earlier versions may not have all the required plugin APIs.
