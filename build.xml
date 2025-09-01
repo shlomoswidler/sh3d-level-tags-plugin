@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Level Tags Plugin" default="build" basedir=".">
+    
+    <!-- Properties -->
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="jar.name" value="LevelTagsPlugin.jar"/>
+    <property name="sh3p.name" value="LevelTagsPlugin.sh3p"/>
+    
+    <!-- Classpath -->
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    
+    <!-- Clean target -->
+    <target name="clean" description="Clean build directory">
+        <delete dir="${build.dir}"/>
+        <delete file="${jar.name}"/>
+        <delete file="${sh3p.name}"/>
+    </target>
+    
+    <!-- Init target -->
+    <target name="init" description="Create build directories">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+    
+    <!-- Compile target -->
+    <target name="compile" depends="init" description="Compile Java sources">
+        <javac srcdir="${src.dir}" 
+               destdir="${classes.dir}"
+               classpathref="compile.classpath"
+               source="8"
+               target="8"
+               encoding="UTF-8"
+               includeantruntime="false">
+            <include name="**/*.java"/>
+        </javac>
+        
+        <!-- Copy properties files -->
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <!-- JAR target -->
+    <target name="jar" depends="compile" description="Create JAR file">
+        <jar destfile="${jar.name}" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Built-By" value="Apache Ant"/>
+                <attribute name="Build-Date" value="${DSTAMP}"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <!-- SH3P target -->
+    <target name="sh3p" depends="jar" description="Create .sh3p file for Sweet Home 3D">
+        <copy file="${jar.name}" tofile="${sh3p.name}"/>
+    </target>
+    
+    <!-- Build target -->
+    <target name="build" depends="sh3p" description="Complete build">
+        <echo message="Build complete!"/>
+        <echo message="Files created:"/>
+        <echo message="  - ${jar.name}"/>
+        <echo message="  - ${sh3p.name}"/>
+        <echo message=""/>
+        <echo message="To install: Double-click ${sh3p.name} and restart Sweet Home 3D"/>
+    </target>
+    
+    <!-- Verify target -->
+    <target name="verify" depends="jar" description="Verify JAR contents">
+        <echo message="JAR contents:"/>
+        <exec executable="jar">
+            <arg value="tf"/>
+            <arg value="${jar.name}"/>
+        </exec>
+    </target>
+    
+</project>
