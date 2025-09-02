@@ -6,8 +6,11 @@
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="lib.dir" value="lib"/>
-    <property name="jar.name" value="LevelTagsPlugin.jar"/>
-    <property name="sh3p.name" value="LevelTagsPlugin.sh3p"/>
+    
+    <!-- Load version from properties file -->
+    <property file="${src.dir}/ApplicationPlugin.properties"/>
+    <property name="jar.name" value="LevelTagsPlugin-v${version}.jar"/>
+    <property name="sh3p.name" value="LevelTagsPlugin-v${version}.sh3p"/>
     
     <!-- Classpath -->
     <path id="compile.classpath">
@@ -21,6 +24,11 @@
         <delete dir="${build.dir}"/>
         <delete file="${jar.name}"/>
         <delete file="${sh3p.name}"/>
+        <!-- Clean any previous versioned files -->
+        <delete>
+            <fileset dir="." includes="LevelTagsPlugin-v*.jar"/>
+            <fileset dir="." includes="LevelTagsPlugin-v*.sh3p"/>
+        </delete>
     </target>
     
     <!-- Init target -->

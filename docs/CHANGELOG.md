@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Build system now generates versioned artifacts (e.g., LevelTagsPlugin-v1.0.5.jar)
+- Enhanced clean target to remove all versioned build artifacts
+
 ### Planned Features
 - Context menu integration (pending Sweet Home 3D API changes)
 - Keyboard shortcuts for common operations (pending Sweet Home 3D support)
@@ -26,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated docs to describe how to use new UI
 
 ### Build/Code Changes
-- Use Resource Bundle (properties file) instead of hardcoded display stringa
+- Use Resource Bundle (properties file) instead of hardcoded display strings
 - Cleaned up strings in properties file
 - Updated docs to describe how to build
 
